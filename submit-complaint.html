@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Submit Complaint</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-primary">
+<div class="container">
+<a class="navbar-brand fw-bold" href="sender-dashboard.html">
+Complaint Tracker
+</a>
+</div>
+</nav>
+
+<div class="container mt-5">
+
+<div class="row justify-content-center">
+
+<div class="col-lg-8">
+
+<div class="card shadow-lg">
+
+<div class="card-header bg-primary text-white">
+<h3>Submit Complaint</h3>
+</div>
+
+<div class="card-body">
+
+<form id="complaintForm">
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+<label class="form-label">Complaint Title</label>
+<input type="text" id="title" class="form-control" required>
+</div>
+
+<div class="col-md-6 mb-3">
+<label class="form-label">Category</label>
+
+<select id="category" class="form-select" required>
+<option value="">Select</option>
+<option>Road</option>
+<option>Water Supply</option>
+<option>Electricity</option>
+<option>Garbage</option>
+<option>Street Light</option>
+<option>Drainage</option>
+<option>Other</option>
+</select>
+
+</div>
+
+</div>
+
+<div class="mb-3">
+<label class="form-label">Priority</label>
+
+<select id="priority" class="form-select">
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+</select>
+
+</div>
+
+<div class="mb-3">
+<label class="form-label">Complaint Description</label>
+
+<textarea
+id="description"
+class="form-control"
+rows="5"
+required></textarea>
+
+</div>
+
+<div class="mb-3">
+<label class="form-label">Location</label>
+<input type="text" id="location" class="form-control" required>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Upload Image</label>
+
+<input
+type="file"
+id="image"
+class="form-control"
+accept="image/*">
+
+</div>
+
+<div class="d-grid">
+<button class="btn btn-success btn-lg">
+Submit Complaint
+</button>
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="js/supabase.js"></script>
+
+<script>
+
+let user = JSON.parse(localStorage.getItem("currentUser"));
+
+if (!user) {
+    window.location = "login.html";
+}
+
+document.getElementById("complaintForm").addEventListener("submit", function(e){
+
+    e.preventDefault();
+
+    let reader = new FileReader();
+
+    let file = document.getElementById("image").files[0];
+
+    if(file){
+
+        reader.readAsDataURL(file);
+
+        reader.onload = function(){
+
+            saveComplaint(reader.result);
+
+        }
+
+    }
+    else{
+
+        saveComplaint("");
+
+    }
+
+});
+
+async function saveComplaint(image){
+
+    const complaintId = "CMP" + Date.now();
+
+    const indiaDate = new Date().toLocaleDateString("en-IN",{
+        timeZone:"Asia/Kolkata"
+    });
+
+    const indiaTime = new Date().toLocaleTimeString("en-IN",{
+        timeZone:"Asia/Kolkata"
+    });
+
+    const indiaDateTime = new Date().toLocaleString("en-IN",{
+        timeZone:"Asia/Kolkata"
+    });
+
+    const { error } = await supabaseClient
+    .from("complaints")
+    .insert([
+        {
+
+            complaint_id: complaintId,
+            name: user.name,
+            email: user.email,
+            mobile: user.mobile,
+
+            title: document.getElementById("title").value,
+            category: document.getElementById("category").value,
+            priority: document.getElementById("priority").value,
+            description: document.getElementById("description").value,
+            location: document.getElementById("location").value,
+
+            image: image,
+
+            status: "Submitted",
+
+            remarks: "Complaint Received",
+
+            date: indiaDate,
+
+            time: indiaTime,
+
+            timeline: [
+                {
+                    status: "Submitted",
+                    date: indiaDateTime
+                }
+            ]
+
+        }
+    ]);
+
+    if(error){
+
+        alert(error.message);
+        return;
+
+    }
+
+    alert("Complaint Submitted Successfully");
+
+    window.location = "sender-dashboard.html";
+
+}
+
+</script>
+
+</body>
+
+</html>
