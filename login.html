@@ -38,7 +38,9 @@ Sender Login
 
 </div>
 
+
 <form id="loginForm">
+
 
 <div class="mb-3">
 
@@ -55,11 +57,16 @@ required>
 
 </div>
 
+
+<!-- PASSWORD WITH SHOW / HIDE -->
+
 <div class="mb-3">
 
 <label class="form-label">
 Password
 </label>
+
+<div class="input-group">
 
 <input
 type="password"
@@ -68,11 +75,25 @@ class="form-control"
 placeholder="Enter Password"
 required>
 
+<button
+type="button"
+class="btn btn-outline-secondary"
+id="togglePassword">
+
+Show
+
+</button>
+
 </div>
+
+</div>
+
 
 <div class="d-grid">
 
-<button class="btn btn-primary btn-lg">
+<button
+type="submit"
+class="btn btn-primary btn-lg">
 
 Login
 
@@ -80,7 +101,9 @@ Login
 
 </div>
 
+
 </form>
+
 
 <div class="text-center mt-4">
 
@@ -104,7 +127,6 @@ Forgot Password?
 
 </div>
 
-</div>
 
 </div>
 
@@ -113,12 +135,47 @@ Forgot Password?
 </div>
 
 </div>
+
+</div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
 <script src="js/supabase.js"></script>
 
 
 <script>
+
+// ============================================
+// SHOW / HIDE PASSWORD
+// ============================================
+
+document.getElementById("togglePassword").addEventListener("click", function () {
+
+    const passwordInput =
+        document.getElementById("password");
+
+
+    if (passwordInput.type === "password") {
+
+        passwordInput.type = "text";
+
+        this.textContent = "Hide";
+
+    } else {
+
+        passwordInput.type = "password";
+
+        this.textContent = "Show";
+
+    }
+
+});
+
+
+// ============================================
+// LOGIN
+// ============================================
 
 document.getElementById("loginForm").addEventListener("submit", async function(e){
 
@@ -128,6 +185,7 @@ let email=document.getElementById("email").value;
 
 let password=document.getElementById("password").value;
 
+
 const { data: user, error } = await supabaseClient
     .from("users")
     .select("*")
@@ -135,38 +193,68 @@ const { data: user, error } = await supabaseClient
     .eq("password", password)
     .maybeSingle();
 
+
 if (error) {
+
     alert(error.message);
+
     return;
+
 }
+
 
 if (user) {
 
     // Current India Time
+
     const indiaTime = new Date().toLocaleString("en-IN", {
+
         timeZone: "Asia/Kolkata"
+
     });
 
+
     // Update last login
-    const { error: updateError } = await supabaseClient
-        .from("users")
-        .update({
-            last_login: indiaTime
-        })
-        .eq("email", email);
+
+    const { error: updateError } =
+        await supabaseClient
+            .from("users")
+            .update({
+
+                last_login: indiaTime
+
+            })
+            .eq("email", email);
+
 
     if (updateError) {
+
         alert(updateError.message);
+
         return;
+
     }
 
+
     // Save current user
+
     user.last_login = indiaTime;
-    localStorage.setItem("currentUser", JSON.stringify(user));
 
-    alert("Login Successful\n\nLast Login: " + indiaTime);
+    localStorage.setItem(
+        "currentUser",
+        JSON.stringify(user)
+    );
 
-    window.location = "sender-dashboard.html";
+
+    alert(
+        "Login Successful\n\nLast Login: " +
+        indiaTime
+    );
+
+
+    window.location =
+        "sender-dashboard.html";
+
 
 } else {
 
@@ -177,6 +265,7 @@ if (user) {
 });
 
 </script>
+
 
 </body>
 
