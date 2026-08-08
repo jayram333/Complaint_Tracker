@@ -49,6 +49,7 @@ required>
 
 </div>
 
+
 <div class="mb-3">
 
 <label class="form-label">Mobile Number</label>
@@ -63,6 +64,7 @@ required>
 
 </div>
 
+
 <div class="mb-3">
 
 <label class="form-label">Email</label>
@@ -75,6 +77,7 @@ placeholder="Enter Email"
 required>
 
 </div>
+
 
 <div class="mb-3">
 
@@ -89,9 +92,14 @@ required></textarea>
 
 </div>
 
+
+<!-- PASSWORD -->
+
 <div class="mb-3">
 
 <label class="form-label">Password</label>
+
+<div class="input-group">
 
 <input
 type="password"
@@ -100,11 +108,27 @@ class="form-control"
 placeholder="Create Password"
 required>
 
+<button
+type="button"
+class="btn btn-outline-secondary"
+id="togglePassword">
+
+Show
+
+</button>
+
 </div>
+
+</div>
+
+
+<!-- CONFIRM PASSWORD -->
 
 <div class="mb-3">
 
 <label class="form-label">Confirm Password</label>
+
+<div class="input-group">
 
 <input
 type="password"
@@ -113,11 +137,25 @@ class="form-control"
 placeholder="Confirm Password"
 required>
 
+<button
+type="button"
+class="btn btn-outline-secondary"
+id="toggleConfirmPassword">
+
+Show
+
+</button>
+
 </div>
+
+</div>
+
 
 <div class="d-grid">
 
-<button class="btn btn-success btn-lg">
+<button
+type="submit"
+class="btn btn-success btn-lg">
 
 Register
 
@@ -126,6 +164,7 @@ Register
 </div>
 
 </form>
+
 
 <div class="text-center mt-4">
 
@@ -149,10 +188,69 @@ Login Here
 
 </div>
 
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
 <script src="js/supabase.js"></script>
 
+
 <script>
+
+// ============================================
+// SHOW / HIDE PASSWORD
+// ============================================
+
+document.getElementById("togglePassword").addEventListener("click", function () {
+
+    const passwordInput =
+        document.getElementById("password");
+
+    if (passwordInput.type === "password") {
+
+        passwordInput.type = "text";
+
+        this.textContent = "Hide";
+
+    } else {
+
+        passwordInput.type = "password";
+
+        this.textContent = "Show";
+
+    }
+
+});
+
+
+// ============================================
+// SHOW / HIDE CONFIRM PASSWORD
+// ============================================
+
+document.getElementById("toggleConfirmPassword").addEventListener("click", function () {
+
+    const confirmPasswordInput =
+        document.getElementById("confirmPassword");
+
+    if (confirmPasswordInput.type === "password") {
+
+        confirmPasswordInput.type = "text";
+
+        this.textContent = "Hide";
+
+    } else {
+
+        confirmPasswordInput.type = "password";
+
+        this.textContent = "Show";
+
+    }
+
+});
+
+
+// ============================================
+// REGISTRATION
+// ============================================
 
 document.getElementById("registerForm").addEventListener("submit", async function(e){
 
@@ -170,6 +268,7 @@ let password=document.getElementById("password").value;
 
 let confirmPassword=document.getElementById("confirmPassword").value;
 
+
 if(password!==confirmPassword){
 
 alert("Passwords do not match");
@@ -177,6 +276,7 @@ alert("Passwords do not match");
 return;
 
 }
+
 
 if(mobile.length!=10){
 
@@ -186,20 +286,30 @@ return;
 
 }
 
+
 // Check if email already exists
-const { data: existingUser, error: checkError } = await supabaseClient
+
+const { data: existingUser, error: checkError } =
+await supabaseClient
     .from("users")
     .select("*")
     .eq("email", email)
     .maybeSingle();
 
+
 if (existingUser) {
-    alert("Email Already Registered");
-    return;
+
+alert("Email Already Registered");
+
+return;
+
 }
 
+
 // Insert new user
-const { error } = await supabaseClient
+
+const { error } =
+await supabaseClient
     .from("users")
     .insert([
         {
@@ -211,12 +321,19 @@ const { error } = await supabaseClient
         }
     ]);
 
+
 if (error) {
-    alert(error.message);
+
+alert(error.message);
+
 } else {
-    alert("Registration Successful");
-    window.location = "login.html";
+
+alert("Registration Successful");
+
+window.location = "login.html";
+
 }
+
 });
 
 </script>
